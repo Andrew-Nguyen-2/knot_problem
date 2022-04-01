@@ -194,3 +194,4 @@ if __name__ == "__main__":
 
     straightened2.iterate_string()
     print(straightened2.output())
+
