@@ -56,7 +56,6 @@ class Solve:
         self.start_index = self.find_start()
         self.states = []
         self.num_intersections = np.count_nonzero(self.string_input == "H") + np.count_nonzero(self.string_input == "I")
-        self.string_length = 0
 
     def find_start(self):
         left_column = self.string_input[:, 0]
@@ -169,12 +168,17 @@ class Solve:
             prev = tmp
 
     def output(self):
-        prev = self.states[0]
+        knot = False
         for i in range(1, len(self.states)):
-            if self.states[i] == prev:
-                return "knotted"
+            if self.states[i] != self.states[i-1]:
+                knot = True
+            if self.states[i] == self.states[i-1]:
+                knot = False
 
-        return "straightened"
+        if knot:
+            return "knotted"
+        else:
+            return "straightened"
 
 
 if __name__ == "__main__":
