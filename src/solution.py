@@ -235,7 +235,9 @@ if __name__ == "__main__":
     # straightened2.iterate_string()
     # print(straightened2.output())
     knots = load_data()
-    for i in knots:
-        solution = Solve(i)
-        solution.iterate_string()
-        print(solution.output())
+    for knot in knots:
+        # solution = Solve(knot)
+        # solution.iterate_string()
+        # print(solution.output())
+        print(knot)
+        print("")
