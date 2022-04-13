@@ -1,17 +1,5 @@
 import numpy as np
 
-test_input_straightened2 = [
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '+', '-', '-', '-', '-', '-', '-', '+', '.', '.', '.', '.'],
-    ['.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '|', '.', '.', '.', '.'],
-    ['.', '.', '.', '|', '.', '.', '.', '+', '-', '-', 'H', '-', '-', '-', '-'],
-    ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '|', '.', '.', '.', '.'],
-    ['-', '-', '-', 'H', '-', '-', '-', 'I', '-', '-', '+', '.', '.', '.', '.'],
-    ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '+', '-', '-', '-', '+', '.', '.', '.', '.', '.', '.', '.'],
-    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
-]
-
 
 def load_data():
     f = open("input_cases", "r")
@@ -40,7 +28,8 @@ def load_data():
         col = int(i)
         knot = knots[:col+1]
         knots = knots[col+1:]
-        knots_cleaned.append(knot)
+        if len(knot) >= 2:
+            knots_cleaned.append(knot)
 
 
     for i in range(len(knots_cleaned)):
@@ -204,23 +193,6 @@ class Solve:
 
 
 if __name__ == "__main__":
-    # knotted = Solve(test_input_knotted)
-    # straightened = Solve(test_input_straightened)
-    # knotted2 = Solve(test_input_knotted2)
-    # straightened2 = Solve(test_input_straightened2)
-    #
-    # knotted.iterate_string()
-    # print(knotted.output())
-    #
-    # straightened.iterate_string()
-    # print(straightened.output())
-    #
-    # knotted2.iterate_string()
-    # print(knotted2.output())
-    #
-    # straightened2.iterate_string()
-    # print(straightened2.output())
-
     # Test cases:
     # Case 1: straightened
     # Case 2: straightened
