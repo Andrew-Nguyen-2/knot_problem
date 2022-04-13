@@ -1,52 +1,16 @@
 import numpy as np
 
-# test_input_knotted = [
-#     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '+', '-', '-', '-', '-', '-', '-', '+', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '|', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '+', '-', '-', 'H', '-', '-', '-', '-'],
-#     ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '|', '.', '.', '.', '.'],
-#     ['-', '-', '-', 'I', '-', '-', '-', 'H', '-', '-', '+', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '+', '-', '-', '-', '+', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
-# ]
-#
-# test_input_straightened = [
-#     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '+', '-', '-', '-', '-', '-', '-', '+', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '|', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '+', '-', '-', 'I', '-', '-', '-', '-'],
-#     ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '|', '.', '.', '.', '.'],
-#     ['-', '-', '-', 'I', '-', '-', '-', 'H', '-', '-', '+', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '+', '-', '-', '-', '+', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
-# ]
-#
-# test_input_knotted2 = [
-#     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '+', '-', '-', '-', '-', '-', '-', '+', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '|', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '+', '-', '-', 'I', '-', '-', '-', '-'],
-#     ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '|', '.', '.', '.', '.'],
-#     ['-', '-', '-', 'H', '-', '-', '-', 'I', '-', '-', '+', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '+', '-', '-', '-', '+', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
-# ]
-#
-# test_input_straightened2 = [
-#     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '+', '-', '-', '-', '-', '-', '-', '+', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '|', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '+', '-', '-', 'H', '-', '-', '-', '-'],
-#     ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '|', '.', '.', '.', '.'],
-#     ['-', '-', '-', 'H', '-', '-', '-', 'I', '-', '-', '+', '.', '.', '.', '.'],
-#     ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '+', '-', '-', '-', '+', '.', '.', '.', '.', '.', '.', '.'],
-#     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
-# ]
+test_input_straightened2 = [
+    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '+', '-', '-', '-', '-', '-', '-', '+', '.', '.', '.', '.'],
+    ['.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '|', '.', '.', '.', '.'],
+    ['.', '.', '.', '|', '.', '.', '.', '+', '-', '-', 'H', '-', '-', '-', '-'],
+    ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '|', '.', '.', '.', '.'],
+    ['-', '-', '-', 'H', '-', '-', '-', 'I', '-', '-', '+', '.', '.', '.', '.'],
+    ['.', '.', '.', '|', '.', '.', '.', '|', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '+', '-', '-', '-', '+', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
+]
 
 
 def load_data():
@@ -164,7 +128,7 @@ class Solve:
             if self.string_input[above[0]][above[1]] not in valid_continue and \
                     self.string_input[below[0]][below[1]] not in valid_continue:
                 return left
-        if self.string_input[right[0]][right[0]] in valid_continue and right != prev_index:
+        if self.string_input[right[0]][right[1]] in valid_continue and right != prev_index:
             if current_string == "+" or previous_string == "-" or previous_string in intersections:
                 return right
             if self.string_input[above[0]][above[1]] not in valid_continue and \
@@ -180,23 +144,43 @@ class Solve:
     def iterate_string(self):
         curr = self.start_index
         prev = self.start_index
+        last_intersection_index = [curr]
         i = 0
 
-        while i < self.num_intersections:
+        while i < (self.num_intersections * 2):
             current_string_value = self.string_input[curr[0]][curr[1]]
             previous_string_value = self.string_input[prev[0]][prev[1]]
 
             if previous_string_value == "-" and current_string_value == "H":
                 self.states.append("over")
+                if curr == last_intersection_index[-1]:
+                    self.states = []
+                    self.output()
+                last_intersection_index.append(curr)
                 i += 1
             if previous_string_value == "-" and current_string_value == "I":
                 self.states.append("under")
+                if curr == last_intersection_index[-1]:
+                    self.states = []
+                    self.output()
+                    return
+                last_intersection_index.append(curr)
                 i += 1
             if previous_string_value == "|" and current_string_value == "H":
                 self.states.append("under")
+                if curr == last_intersection_index[-1]:
+                    self.states = []
+                    self.output()
+                    return
+                last_intersection_index.append(curr)
                 i += 1
             if previous_string_value == "|" and current_string_value == "I":
                 self.states.append("over")
+                if curr == last_intersection_index[-1]:
+                    self.states = []
+                    self.output()
+                    return
+                last_intersection_index.append(curr)
                 i += 1
 
             tmp = curr
@@ -205,6 +189,8 @@ class Solve:
 
     def output(self):
         knot = False
+        if len(self.states) < 3:
+            return "straightened"
         for i in range(1, len(self.states)):
             if self.states[i] != self.states[i-1]:
                 knot = True
@@ -234,10 +220,20 @@ if __name__ == "__main__":
     #
     # straightened2.iterate_string()
     # print(straightened2.output())
+
+    # Test cases:
+    # Case 1: straightened
+    # Case 2: straightened
+    # Case 3: knotted
+    # Case 4: knotted
+    # Case 5: straightened
+    # Case 6: knotted
+    # Case 7: straightened
+
     knots = load_data()
+    case = 1
     for knot in knots:
-        # solution = Solve(knot)
-        # solution.iterate_string()
-        # print(solution.output())
-        print(knot)
-        print("")
+        solution = Solve(knot)
+        solution.iterate_string()
+        print("Case", str(case) + ":", solution.output())
+        case += 1
