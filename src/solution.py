@@ -1,4 +1,5 @@
 import numpy as np
+from extra import *
 
 
 def load_data():
@@ -201,11 +202,19 @@ if __name__ == "__main__":
     # Case 5: straightened
     # Case 6: knotted
     # Case 7: straightened
+    # Case 8: straightened
 
     knots = load_data()
     case = 1
     for knot in knots:
+        path = Path(knot)
+        print(path)
+        path.show_strands()
+        while path.resolve_r1_moves():
+            print(path)
+
         solution = Solve(knot)
         solution.iterate_string()
         print("Case", str(case) + ":", solution.output())
+        print("-" * 75)
         case += 1
