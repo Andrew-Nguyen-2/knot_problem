@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import os
 
 import numpy as np
@@ -5,19 +6,11 @@ import numpy as np
 from solution import *
 
 
+@dataclass(frozen=True)
 class Point:
-
-    def __init__(self, x, y, c):
-        self.x = x
-        self.y = y
-        self.c = c
-
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
-
-    def __str__(self):
-        return f"x={self.x}, y={self.y}, c={self.c}"
-
+    x: int
+    y: int
+    c: str
 
 class Path:
 
@@ -243,7 +236,7 @@ class Path:
                     current = self.path[point_index]
                     continue
 
-        self.strands.append(self.path[strand_index:current_index])
+        self.strands.append(self.path[strand_index:current_index + 1])
 
 
 
@@ -274,6 +267,7 @@ class Path:
          
         return len(crossing_indexes) != 0
 
+
     def resolve_r2_moves(self):
         self.calculate_strands()
 
@@ -285,7 +279,6 @@ class Path:
         for i in range(len(self.strands) - 1):
             c1 = self.strands[i][-1]
             c2 = self.strands[i + 1][-1]
-
             for i, strand in enumerate(self.strands):
                 if c1 in strand and c2 in strand:
                     over_strand, start_cross, end_cross = i, c1, c2
@@ -296,13 +289,11 @@ class Path:
 
         return have_r2
 
-            
-
-
 
     def calc_alexander(self):
+        self.calculate_strands()
+
         # Follow path until reach crossing
-        # 
         point_index = 0
         current = self.path[point_index]
         end = self.path[-1]
@@ -372,8 +363,104 @@ class Path:
 
     def calc_alexander(self):
         self.calculate_strands()
+        # Precalculate which strand a point belongs to
+        strand_dict = {}
+        for point in self.path:
+            for i, strand in enumerate(self.strands):
+                if point in strand:
+                    if point.c in "HI" and point == strand[-1]:
+                        continue
+                    else:
+                        strand_dict[point] = i
+                        break
         
-        # TODO Play around with symbolic solver. Idea is to calculate matrix with symbols, and create alex polynomial from it
+        num_strands = len(self.strands)
+        alex_mat = np.zeros((num_strands, num_strands))
+
+        point_index = 0
+        current = self.path[point_index]
+        end = self.path[-1]
+        direction = "r"
+
+        strand_index = 0
+        current_index = 0
+
+        while current != end:
+            current_index += 1
+            if current.c == '-':
+                point_index += 1
+                current = self.path[point_index]
+                continue
+
+            if current.c == '|':
+                point_index += 1
+                current = self.path[point_index]
+                continue
+
+            if current.c == "+":
+                if direction == "u" or direction == "d":
+                    if self.path[point_index].y < self.path[point_index + 1].y:
+                        point_index += 1
+                        current = self.path[point_index]
+                        direction = "r"
+                        continue
+                    else:
+                        point_index += 1
+                        current = self.path[point_index]
+                        direction = "l"
+                        continue
+                if direction == "l" or direction == "r":
+                    if self.path[point_index].x > self.path[point_index + 1].x:
+                        point_index += 1
+                        current = self.path[point_index]
+                        direction = "u"
+                        continue
+                    else:
+                        point_index += 1
+                        current = self.path[point_index]
+                        direction = "d"
+                        continue
+
+            if current.c == "I":
+                if direction in "ud":
+                    # a = current strand
+                    # b = above strand
+                    # c = below strand
+                    # add to matrix 1a + tc - ta - b
+
+                    a = strand_dict[a]
+                    # if direction == "u":
+                    #     b = TODO
+
+                    point_index += 1
+                    current = self.path[point_index]
+                    continue
+                if direction in "rl":
+                    point_index += 1
+                    current = self.path[point_index]
+                    continue
+ 
+            if current.c == "H":
+                if direction in "ud":
+                    point_index += 1
+                    current = self.path[point_index]
+                    continue
+                if direction in "rl":
+                    a = current strand
+                    b = above strand
+                    c = below strand
+                    add to matrix 1a + tc - ta - b
+
+                    point_index += 1
+                    current = self.path[point_index]
+                    continue
+
+
+        
+
+        return -1
+         
+
 
 
 if __name__ == "__main__":

@@ -209,12 +209,14 @@ if __name__ == "__main__":
     for knot in knots:
         path = Path(knot)
         print(path)
-        path.show_strands()
+        # path.show_strands()
         while path.resolve_r1_moves():
             print(path)
+
+        path.calc_alexander()
 
         solution = Solve(knot)
         solution.iterate_string()
         print("Case", str(case) + ":", solution.output())
-        print("-" * 75)
+        print("-" * 50)
         case += 1
