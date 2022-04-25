@@ -12,11 +12,26 @@ class Point:
     y: int
     c: str
 
-class Path:
 
+class Crossing:
+    def __init__(self, over, top, bottom):
+        self.over = over
+        self.top = top
+        self.bottom = bottom
+        self.o = None
+        self.t = None
+        self.b = None
+
+
+    def identify_strands(self):
+        return self.o, self.t, self.b
+
+
+class Path:
     def __init__(self, case):
         self.path = []
         self.strands = []
+        self.crossings = []
         start_index = -1
         for i in range(len(case)):
             if case[i][0] == "-":
@@ -103,13 +118,23 @@ class Path:
                     next_x = current.x + 1
                     next_y = current.y
                     next_c = case[next_x][next_y]
+                    over = current
                     current = Point(next_x, next_y, next_c)
+                    top = Point(over.x, over.y - 1, case[over.x][over.y - 1])
+                    bottom = Point(over.x, over.y + 1, case[over.x][over.y + 1])
+                    crossing = Crossing(over, top, bottom)
+                    self.crossings.append(crossing)
                     continue
                 if direction == "d":
                     next_x = current.x - 1
                     next_y = current.y
                     next_c = case[next_x][next_y]
+                    over = current
                     current = Point(next_x, next_y, next_c)
+                    top = Point(over.x, over.y + 1, case[over.x][over.y + 1])
+                    bottom = Point(over.x, over.y - 1, case[over.x][over.y - 1])
+                    crossing = Crossing(over, top, bottom)
+                    self.crossings.append(crossing)
                     continue
                 if direction == "r":
                     next_x = current.x
@@ -141,13 +166,23 @@ class Path:
                     next_x = current.x
                     next_y = current.y + 1
                     next_c = case[next_x][next_y]
+                    over = current
                     current = Point(next_x, next_y, next_c)
+                    top = Point(over.x - 1, over.y, case[over.x - 1][over.y])
+                    bottom = Point(over.x + 1, over.y, case[over.x + 1][over.y])
+                    crossing = Crossing(over, top, bottom)
+                    self.crossings.append(crossing)
                     continue
                 if direction == "l":
                     next_x = current.x
                     next_y = current.y - 1
                     next_c = case[next_x][next_y]
+                    over = current
                     current = Point(next_x, next_y, next_c)
+                    top = Point(over.x + 1, over.y, case[over.x + 1][over.y])
+                    bottom = Point(over.x - 1, over.y, case[over.x - 1][over.y])
+                    crossing = Crossing(over, top, bottom)
+                    self.crossings.append(crossing)
                     continue
 
             if current.c == ".":
@@ -156,6 +191,15 @@ class Path:
 
         self.path.append(end)
         self.calculate_strands()
+        
+        for crossing in self.crossings:
+            for i, strand in enumerate(self.strands):
+                if crossing.over in strand:
+                    crossing.o = i
+                if crossing.top in strand:
+                    crossing.t = i
+                if crossing.bottom in strand:
+                    crossing.b = i
 
 
     def __str__(self):
@@ -218,7 +262,7 @@ class Path:
                     current = self.path[point_index]
                     continue
                 if direction in "rl":
-                    self.strands.append(self.path[strand_index:current_index])
+                    self.strands.append(self.path[strand_index:current_index - 1])
                     strand_index = current_index
                     point_index += 1
                     current = self.path[point_index]
@@ -226,7 +270,7 @@ class Path:
  
             if current.c == "H":
                 if direction in "ud":
-                    self.strands.append(self.path[strand_index:current_index])
+                    self.strands.append(self.path[strand_index:current_index - 1])
                     strand_index = current_index
                     point_index += 1
                     current = self.path[point_index]
@@ -236,7 +280,10 @@ class Path:
                     current = self.path[point_index]
                     continue
 
-        self.strands.append(self.path[strand_index:current_index + 1])
+        if len(self.strands) == 0:
+            self.strands.append(self.path[strand_index:current_index + 1])
+        else:
+            self.strands[0].extend(self.path[strand_index:current_index + 1])
 
 
 
@@ -446,10 +493,10 @@ class Path:
                     current = self.path[point_index]
                     continue
                 if direction in "rl":
-                    a = current strand
-                    b = above strand
-                    c = below strand
-                    add to matrix 1a + tc - ta - b
+                    # a = current strand
+                    # b = above strand
+                    # c = below strand
+                    # add to matrix 1a + tc - ta - b
 
                     point_index += 1
                     current = self.path[point_index]
@@ -461,6 +508,19 @@ class Path:
         return -1
          
 
+    def calc_alexander(self):
+        num_crossings = len(self.crossings)
+        pt = np.zeros((num_crossings, num_crossings))
+
+        for i, crossing in enumerate(self.crossings):
+            over, top, bottom = crossing.identify_strands()
+            pt[i][over] += 2
+            pt[i][top] -= 1
+            pt[i][bottom] -= 1
+
+        p = pt[1:, 1:]
+        coloring = np.round(abs(np.linalg.det(p)))
+        return coloring
 
 
 if __name__ == "__main__":

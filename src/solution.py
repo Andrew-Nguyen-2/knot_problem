@@ -210,10 +210,16 @@ if __name__ == "__main__":
         path = Path(knot)
         print(path)
         # path.show_strands()
-        while path.resolve_r1_moves():
-            print(path)
+        # while path.resolve_r1_moves():
+        #    print(path)
 
-        path.calc_alexander()
+        colorability = path.calc_alexander()
+        print(f"Knot is {colorability} colorable")
+        if colorability == 1:
+            print("straightened based on colorability")
+        else:
+            print("knotted based on colorability")
+        
 
         solution = Solve(knot)
         solution.iterate_string()
